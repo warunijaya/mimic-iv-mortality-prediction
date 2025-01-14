@@ -89,12 +89,110 @@ For a more comprehensive understanding of the dataset, including the relationshi
 ---
 
 ## Problem Statement
-Define problem
-Draw timeline
-Explain preprocessing steps
-Explain startified sampling
-Show each model performance
-Discussion:
-* Discuss feature importance
-* Limitations
-* Possible improvements
+
+### Background
+The accurate prediction of in-hospital patient mortality is a critical task in healthcare systems. Identifying high-risk patients early during their hospital stay can enable clinicians to allocate resources effectively, provide timely interventions, and improve patient outcomes. The MIMIC-IV dataset, a comprehensive clinical database, provides a wealth of information such as demographics, vital signs, lab measurements, and medications, making it a valuable resource for building predictive models.
+
+### Objective
+The objective of this project is to develop a machine learning model to predict **in-hospital mortality** (whether a patient dies during their hospital stay) within the first 3 hours of admission using the data available in the MIMIC-IV dataset. The model aims to support clinical decision-making by providing a risk score that can guide prioritization and intervention strategies.
+
+### Problem Scope
+The project focuses on leveraging structured data, including:
+- **Demographics**: Age, gender, ethnicity, etc.
+- **Admission Details**: Admission type, admission location, and during the first 3 hours of admission.
+
+The primary challenge is to build a robust model that generalizes well across diverse patient populations while avoiding target leakage, particularly from features like `deathtime`, which directly indicates mortality.
+
+### Key Questions
+1. Can we predict in-hospital mortality within the first 3 hours of admission using routinely collected clinical data?
+2. What are the most important features influencing mortality risk in the MIMIC-IV dataset?
+3. How does the predictive performance of different machine learning models (e.g., Logistic Regression, Random Forest, LightGBM, Neural Networks) compare in this context?
+
+
+### Significance
+This project has the potential to improve patient outcomes by identifying high-risk patients early, helping clinicians prioritize interventions, and optimizing hospital resource utilization. Additionally, it demonstrates the applicability of machine learning in critical care settings and lays the groundwork for future clinical decision-support tools.
+
+## Data preprocessing steps
+
+### Categorical mapping
+Used to map ordered categorical variables to numerical values for 'Race' column and 'Gender' column.  
+
+In the case of the `Race` column, categorical mapping was applied to simplify the data by grouping races into broader categories:
+- `WHITE`
+- `BLACK/AFRICAN`
+- `HISPANIC`
+- `ASIAN`
+- `OTHER`
+
+This mapping reduces complexity and ensures the model can handle the data effectively.
+
+
+### Dummy Variables
+Used to handle nominal categorical variables by converting them into binary columns.
+I used this method for 'race_grouped','gender', 'admission_type','insurance', 'admission_location'
+
+## Startified sampling
+
+### Reducing the Ratio of Training and Validation Sets Based on `y`
+
+In imbalanced datasets, reducing the ratio of training and validation sets based on the target variable (`y`) ensures that both sets maintain similar distributions of the target class. This helps improve model evaluation by providing a balanced and representative validation set.
+
+In this project, the target variable (`hospital_expire_flag`) has 2% ratio between the two class distributions (Death/Alive). Using Startified sampling, downsampled training set with 10% of negative class giving 20 % ratio two class distributions.
+
+### Benefits
+- Ensures fair performance evaluation during validation.
+- Prevents overfitting to the dominant class.
+- Enhances the generalizability of the model to unseen data.
+
+## Model performances
+
+### Logistic_Regression_report
+
+### Random Forest Classification Report
+
+### LightGBM Classification Report
+
+### Neural Network Classification Report
+
+
+The classification reports reveal a notable imbalance in performance across the classes. The "dead" class exhibits significantly lower precision and recall, reflecting challenges in accurately detecting and classifying patients who fall into this category.In contrast, the "dead" class exhibits significantly lower precision and recall, reflecting challenges in accurately detecting and classifying patients who fall into this category.
+
+### ROC-AUC Values
+
+AUC (Area Under the Curve) refers to the area under the Receiver Operating Characteristic (ROC) curve. It measures how well a model distinguishes between two classes—in this case, patients who survive vs. those who die in the hospital.
+
+- **AUC = 1.0** : Perfect model that distinguishes between classes with 100% accuracy.
+- **AUC = 0.5** : Random guess, equivalent to flipping a coin.
+- **AUC < 0.5** : Worse than random guessing; the model is misclassifying the classes.
+
+For the project, following ROC-AUC values were calculated for different models
+- Logistic Regression ROC-AUC: 0.77
+- Random Forest ROC-AUC: 0.72
+- LightGBM ROC-AUC: 0.77
+- Neural Network ROC-AUC: 0.77
+
+The highest AUC 0.77 obtained for Logistic Regression, LightGBM and Neural Network models. 
+
+
+## Discussion
+
+### Feature importance
+Feature importance is a technique used to assess the impact of each feature (or variable) in a dataset on the predictions made by a machine learning model. Understanding feature importance enhances model interpretability, facilitates feature selection, and supports improved decision-making.
+
+In this project, feature importance analysis were conducted for both Random Forest and LightGBM classifier models. Both models identified age as the most significant feature influencing predictions.
+
+For the Random Forest model, additional features with high importance include:
+
+- insurance_Medicare
+- race_grouped_WHITE
+- admission_location_EMERGENCY ROOM
+- admission_location_PHYSICIAN REFERRAL
+
+In contrast, the LightGBM classifier model highlighted the following features as particularly important:
+
+- race_grouped_OTHER
+- admission_location_TRANSFER FROM HOSPITAL
+- admission_location_TRANSFER FROM SKILLED NURSING FACILITY
+
+### Limitations
+The project utilized only admissions and patient data. Incorporating additional datasets such as transfers, labs, procedures, and prescriptions could potentially enhance the final results.
